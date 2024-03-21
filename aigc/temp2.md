@@ -1,9 +1,0 @@
-- 采样图像 $x$ ，VAE编码得到 $z$ 
-- 采样学生模型时间步 $u$
-- 采样教师模型时间步 $u_1 = u - 0.5 / N, u_2 = u - 1 / N$  
-- 用学生模型时间步加噪 $x_{u}$ 
-- 获得学生模型的噪声参数 $\bar{\alpha_u}, \bar{\sigma_u}$ 和教师模型两步的噪声参数 $\bar{\alpha_{u_1}}, \bar{\sigma_{u_1}}$，$\bar{\alpha_{u_2}}, \bar{\sigma_{u_2}}$
-- 随机采样 CFG
-- 学生模型预测噪声，并计算 CFG 之后的噪声 $\hat{\epsilon}$  
-- 根据 $x_t = \bar{\alpha} x_0 + \sqrt{\sigma} \epsilon$ ，得到预测 $x_0 = (x_t - ..) / ..$ 
-- 
