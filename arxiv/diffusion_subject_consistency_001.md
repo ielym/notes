@@ -289,3 +289,51 @@ ID保持的要求：（1） 生成图像的风格需要匹配prompt，（2）生
 
 # [OMG: Occlusion-friendly Personalized Multi-concept Generation in Diffusion Models](https://arxiv.org/abs/2403.10983)
 
+
+
+# [InstantStyle: Free Lunch towards Style-Preserving in Text-to-Image Generation](https://arxiv.org/abs/2404.02733)
+
+## 1 介绍
+
+现有风格保持方法可以分成两大类：
+
+- **Adapter-free：** 这一类方法利用self-attention，通过共享的attention操作来直接从参考风格图像中提取关键特征（如，key, value）。这一类方法直接从参考图像中提取风格元素，比较简洁。
+- **Adapter-based：** 需要一个轻量级的模型，从参考风格图像中提取详细的图像表示。这类方法通过cross-attention来引导扩散过程。
+
+但这些方法都存在一些缺点：
+
+- Adapter-free的方法需要交换参考图像的 K, V。为了获取真实图像的KV，这类方法通常需要通过DDIM Inverse等方法进行Inversion。然而，inversion过程会导致损失纹理和色彩，会减少生成图像中的风格信息。此外，额外的inversion会增加耗时。
+- Adapter-based方法的主要挑战在于风格强度和内容泄露。当增强风格时，也会导致非风格元素的表达增强。为解决内容泄露的问题，一些方法构建相同物体的不同风格的成对数据集，然而，由于风格固有的存在不确定性（风格种类很多），创建大规模成对数据集既需要大量资源，又受其所能捕获的风格多样性的限制，因此对于训练集之外的风格较差。
+
+因此本文提出了基于Adapter-based的InstantStyle，对风格和内容进行解耦，不需要成对数据。与其他方法对比：
+
+- 之前的Adapter-based方法通常使用CLIP作为图像特征提取器，很少有工作考虑特征解耦。考虑到风格的不确定性，内容通常更容易用文本描述。由于文本和图像共享CLIP的特征空间，我们发现对文本特征和图像特征进行简单的减法操作就能够有效的减少内容泄露问题。
+- 受之前工作的启发，我们发现扩散模型中特定的网络层多风格有更好的响应。通过将图像特征仅注入到特定的样式块中，可以隐式地实现样式与内容的解耦。
+
+通过上面的两个简单的改进，就能够解决大多数内容泄露问题，同时保持了风格强度。
+
+## 2 方法
+
+**动机：**
+
+- **风格难以定义：** 和ID一致性不同，风格难以定义并且没有合理的评价指标。风格通常包含多种复杂的元素。因此也难以收集大尺度的相同风格的数据，用MJ等生成数据的方法通常包含大量的噪声数据。此外，收集的风格种类也有限，因为很多细粒度的风格难以用语言描述，且受MJ的能力所限制。
+
+- **Inversion导致风格退化：** Inversion-based方法中，对于输入图像和文本描述，DDIM Inversion方法首先获得一系列逆向过程中的噪声轨迹，之后再使用新的prompt生成新的内容和风格。然而DDIM Inversion依赖于局部线性假设，导致误差较大，并会损失内容信息。
+
+  ![image-20240409012622676](imgs/diffusion_subject_consistency_001/image-20240409012622676.png)
+
+- **风格强度和内容泄露的Trade-off：** 如果图像condition过高，内容就可能泄露，而图像强度过低时，风格不明显。导致该问题的主要原因就是图像和风格没有解耦。
+
+**观察：**
+
+- 
+
+
+
+
+
+# [Style Aligned Image Generation via Shared Attention](https://arxiv.org/abs/2312.02133)
+
+
+
+# [Visual Style Prompting with Swapping Self-Attention](https://arxiv.org/abs/2402.12974)
