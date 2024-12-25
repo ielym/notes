@@ -1,0 +1,1 @@
+[Make Pixels Dance: High-Dynamic Video Generation](https://arxiv.org/abs/2311.10982)

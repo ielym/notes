@@ -76,4 +76,36 @@
 
 ## 2.4 训练过程
 
- 
+- 使用预训练权重初始化，如pixArt，SD3。GDT没有引入额外的参数。
+- 在预训练和FFT阶段，均匀的从1-4之间采样group size，并动态调整bs来保持GPU利用率。
+- 预训练约 10w steps，并在一个高质量数据上微调约5000steps
+- 使用A100GPUs
+
+## 2.5 推理
+
+![image-20241127000242304](imgs/61-Group%20diffusion%20transformers%20are%20unsupervised%20multitask%20learners/image-20241127000242304.png)
+
+- 由于推理时需要一组prompt，不友好，因此构建了一个用户接口。如上图所示，由两种pipeline：
+  - `[Instruction] -> [Group Prompts] -> [Generated Images]` ：用于成组图像生成
+  - `[IMGs] -> [Instruction] -> [Group Prompts] -> [Generated Images]` ：用于有条件的成组图像生成
+
+- 使用MLLMs来把用户的指令转换成为成组的prompts：
+  - MLLMs分析group size以及对应的任务。如：
+    - 假设instruction为 "Draw a line sketch of a female character and the corresponding colored photo" 
+    - MLLM可以推断出instruction需要转换成两个prompts，并把任务分类为'sketch coloring'
+
+# 3 Ablation
+
+![image-20241127001314170](imgs/61-Group%20diffusion%20transformers%20are%20unsupervised%20multitask%20learners/image-20241127001314170.png)
+
+## 3.1 Data Scaling
+
+- 缩放数据至 5k, 50k, 500k个groups来研究数据尺度
+- 随着数据增加，一致性和prompt follow能力都会提升
+- 然而，FID却在逐渐升高，作者认为是因为少量数据容易导致过拟合。
+
+## 3.2 Group Size
+
+- 逐渐把group size的上限增加到2， 4， 8。需要注意，group size翻倍时，self-attn中的sequence length也会double，因此只测试了最多8组。
+- 从上表可以看出，更大的group size会显著降低图像质量，一致性和文本跟随能力。
+- 原因可能是更难学习，也认为可能是缺乏large group sizes的数据导致的。
